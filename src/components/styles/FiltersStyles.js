@@ -7,7 +7,6 @@ export const FilterContainer = styled(Paper)({
     borderRadius: '8px',
     backgroundColor: '#fff',
     padding: 0,
-    margin: '16px'
 });
 
 export const FilterContent = styled(Box)({
