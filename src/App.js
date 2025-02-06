@@ -1,7 +1,7 @@
 import './App.css';
 
 import SearchForm from './components/SearchForm';
-
+import FlightResults from './components/FlightResults';
 function App() {
   return (
     <div className="App">
@@ -10,6 +10,7 @@ function App() {
       </header>
       <main className="App-main">
         <SearchForm />
+        <FlightResults />
       </main>
       <footer className="App-footer">
         {/* Add footer content */}
