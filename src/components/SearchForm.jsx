@@ -4,7 +4,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-const SearchForm = () => {
+const SearchForm = ({ onSearch }) => {
   const [formData, setFormData] = useState({
     origin: '',
     destination: '',
@@ -19,17 +19,11 @@ const SearchForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-  };
 
   return (
     <Container>
       <Box 
         component="form" 
-        onSubmit={handleSubmit}
         sx={{ display: "flex", gap: 2, flexWrap: "wrap", my: 4 }}
       >
         <TextField
@@ -62,9 +56,11 @@ const SearchForm = () => {
           type="submit" 
           variant='contained'
           sx={{ minWidth: '120px' }}
+          onClick={onSearch}
         >
           Search Flights
         </Button>
+
       </Box>
     </Container>
   )

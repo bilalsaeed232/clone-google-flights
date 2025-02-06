@@ -1,19 +1,20 @@
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material';
 
-const FlightResults = () => {
+const FlightResults = ({ flights }) => {
   return (
     <Box sx={{my: 4}}>
         <Typography variant="h6">Flight Results</Typography>
         <List>
-            <ListItem>
-                <ListItemText
-                    primary="Flight 1"
-                    secondary="Departure: 10:00 AM, Arrival: 12:00 PM"
-                />
-            </ListItem>
+            {flights.map((flight, index) => (
+                <ListItem key={index}>
+                    <ListItemText
+                        primary={`${flight.airline} - $${flight.price}`}
+                        secondary= {`Duration: ${flight.duration}, Stops: ${flight.stops}`}
+                    />
+                </ListItem>
+            ))}
         </List>
     </Box>
-
   )
 };
 
