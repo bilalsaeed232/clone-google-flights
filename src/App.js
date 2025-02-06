@@ -8,9 +8,7 @@ import './App.css';
 function App() {
   const [flights, setFlights] = useState([]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-
+  const handleSearch = () => {
     // Mock flight data
     const mockFlights = [
       { airline: "Airline 1", price: 200, duration: "1h 30m", stops: 0 },
@@ -18,7 +16,6 @@ function App() {
       { airline: "Airline 3", price: 400, duration: "1h 30m", stops: 0 },
     ];
 
-    console.log(mockFlights);
     setFlights(mockFlights);
   };
 
