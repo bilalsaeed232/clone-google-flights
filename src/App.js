@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import SearchForm from './components/SearchForm';
 import FlightResults from './components/FlightResults';
-
+import Filters from './components/Filters';
 import './App.css';
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    
+
     // Mock flight data
     const mockFlights = [
       { airline: "Airline 1", price: 200, duration: "1h 30m", stops: 0 },
@@ -33,6 +33,7 @@ function App() {
       </header>
       <main className="App-main">
         <SearchForm onSearch={handleSearch} />
+        <Filters />
         <FlightResults flights={flights} />
       </main>
       <footer className="App-footer">
