@@ -1,81 +1,233 @@
-import React, { useState } from 'react'
-import { Slider, FormControlLabel, MenuItem, RadioGroup, Radio } from '@mui/material'
+import React from 'react'
+import { 
+    Box, 
+    Typography, 
+    Slider, 
+    FormControlLabel, 
+    RadioGroup, 
+    Radio,
+    Divider,
+    Checkbox,
+    Avatar
+} from '@mui/material'
 import {
     FilterContainer,
     FilterContent,
-    FilterTitle,
     FilterSection,
     SectionTitle,
     PriceDisplay,
     PriceText,
-    StyledSelect,
-    sliderStyles,
-    radioGroupStyles,
-    menuProps
 } from './styles/FiltersStyles'
 
-const Filters = () => {
-    const [priceRange, setPriceRange] = useState([0, 1000]);
-    const [stops, setStops] = useState([]);
-    const [airlines, setAirlines] = useState([]);
-
+const Filters = ({ filters, onFilterChange, flights }) => {
     const handlePriceChange = (event, newValue) => {
-        setPriceRange(newValue);
+        onFilterChange({
+            ...filters,
+            priceRange: newValue
+        });
     };
 
     const handleStopsChange = (event) => {
-        setStops(event.target.value);
-    }
+        onFilterChange({
+            ...filters,
+            stops: event.target.value
+        });
+    };
+
+    const handleAirlineChange = (airline) => {
+        const newAirlines = filters.airlines?.includes(airline)
+            ? filters.airlines.filter(a => a !== airline)
+            : [...(filters.airlines || []), airline];
+        
+        onFilterChange({
+            ...filters,
+            airlines: newAirlines
+        });
+    };
+
+    // Calculate price range from actual flights
+    const getPriceRange = () => {
+        if (!flights.length) return [0, 2000];
+        const prices = flights.map(flight => parseFloat(flight.price.replace('$', '')));
+        return [Math.min(...prices), Math.max(...prices)];
+    };
+
+    // Get airlines from filterStats
+    const getAirlines = () => {
+        if (!flights.length) return [];
+        // Access carriers from the first flight's filterStats
+        return flights[0]?.filterStats?.carriers || [];
+    };
+
+    const airlines = getAirlines();
+    const [minPrice, maxPrice] = getPriceRange();
 
     return (
         <FilterContainer elevation={0}>
             <FilterContent>
-                <FilterTitle variant='h6'>Filters</FilterTitle>
+                <Typography 
+                    variant="subtitle1" 
+                    sx={{ 
+                        fontSize: '20px',
+                        fontWeight: 400,
+                        color: '#202124',
+                        mb: 3
+                    }}
+                >
+                    Filters
+                </Typography>
 
                 {/* Price range filter */}
                 <FilterSection>
                     <SectionTitle>Price</SectionTitle>
-                    <Slider
-                        min={0}
-                        max={1000}
-                        onChange={handlePriceChange}
-                        value={priceRange}
-                        valueLabelDisplay="auto"
-                        sx={sliderStyles}
-                    />
-                    <PriceDisplay>
-                        <PriceText>${priceRange[0]}</PriceText>
-                        <PriceText>${priceRange[1]}</PriceText>
-                    </PriceDisplay>
+                    <Box sx={{ px: 1 }}>
+                        <Slider
+                            min={minPrice}
+                            max={maxPrice}
+                            value={filters.priceRange}
+                            onChange={handlePriceChange}
+                            valueLabelDisplay="off"
+                            sx={{
+                                color: '#1a73e8',
+                                '& .MuiSlider-thumb': {
+                                    height: 16,
+                                    width: 16,
+                                    backgroundColor: '#fff',
+                                    border: '2px solid currentColor',
+                                    '&:hover, &.Mui-focusVisible': {
+                                        boxShadow: '0 0 0 8px rgba(26, 115, 232, 0.16)'
+                                    }
+                                },
+                                '& .MuiSlider-rail': {
+                                    backgroundColor: '#dadce0'
+                                }
+                            }}
+                        />
+                        <PriceDisplay>
+                            <PriceText>${filters.priceRange[0]}</PriceText>
+                            <PriceText>${filters.priceRange[1]}</PriceText>
+                        </PriceDisplay>
+                    </Box>
                 </FilterSection>
+
+                <Divider sx={{ my: 2 }} />
 
                 {/* Stops filter */}
                 <FilterSection>
                     <SectionTitle>Stops</SectionTitle>
                     <RadioGroup 
-                        value={stops} 
+                        value={filters.stops} 
                         onChange={handleStopsChange}
-                        sx={radioGroupStyles}
+                        sx={{
+                            '& .MuiFormControlLabel-root': {
+                                my: 0.5
+                            }
+                        }}
                     >
-                        <FormControlLabel value="any" control={<Radio size="small" />} label="Any number of stops" />
-                        <FormControlLabel value="non-stop" control={<Radio size="small" />} label="Nonstop only"/>
-                        <FormControlLabel value="1-stop" control={<Radio size="small" />} label="1 stop or fewer" />
-                        <FormControlLabel value="2-stops" control={<Radio size="small" />} label="2 stops or fewer" />
+                        <FormControlLabel 
+                            value="any" 
+                            control={
+                                <Radio 
+                                    size="small"
+                                    sx={{
+                                        color: '#5f6368',
+                                        '&.Mui-checked': {
+                                            color: '#1a73e8'
+                                        }
+                                    }}
+                                />
+                            } 
+                            label={
+                                <Typography sx={{ fontSize: '14px', color: '#202124' }}>
+                                    Any number of stops
+                                </Typography>
+                            }
+                        />
+                        <FormControlLabel 
+                            value="nonstop" 
+                            control={
+                                <Radio 
+                                    size="small"
+                                    sx={{
+                                        color: '#5f6368',
+                                        '&.Mui-checked': {
+                                            color: '#1a73e8'
+                                        }
+                                    }}
+                                />
+                            } 
+                            label={
+                                <Typography sx={{ fontSize: '14px', color: '#202124' }}>
+                                    Nonstop only
+                                </Typography>
+                            }
+                        />
+                        <FormControlLabel 
+                            value="1-stop" 
+                            control={
+                                <Radio 
+                                    size="small"
+                                    sx={{
+                                        color: '#5f6368',
+                                        '&.Mui-checked': {
+                                            color: '#1a73e8'
+                                        }
+                                    }}
+                                />
+                            } 
+                            label={
+                                <Typography sx={{ fontSize: '14px', color: '#202124' }}>
+                                    1 stop or fewer
+                                </Typography>
+                            }
+                        />
                     </RadioGroup>
                 </FilterSection>
+
+                <Divider sx={{ my: 2 }} />
 
                 {/* Airlines filter */}
                 <FilterSection>
                     <SectionTitle>Airlines</SectionTitle>
-                    <StyledSelect 
-                        multiple 
-                        value={airlines} 
-                        onChange={(e) => setAirlines(e.target.value)}
-                        MenuProps={menuProps}
-                    >
-                        <MenuItem value="Airline 1">Airline 1</MenuItem>
-                        <MenuItem value="Airline 2">Airline 2</MenuItem>
-                    </StyledSelect>
+                    <Box sx={{ mt: 1 }}>
+                        {airlines.length > 0 ? (
+                            airlines.map((airline) => (
+                                <FormControlLabel
+                                    key={airline.id}
+                                    control={
+                                        <Checkbox
+                                            size="small"
+                                            checked={filters.airlines?.includes(airline.name) || false}
+                                            onChange={() => handleAirlineChange(airline.name)}
+                                            sx={{
+                                                color: '#5f6368',
+                                                '&.Mui-checked': {
+                                                    color: '#1a73e8'
+                                                }
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Avatar 
+                                                src={airline.logoUrl} 
+                                                alt={airline.name}
+                                                sx={{ width: 20, height: 20 }}
+                                            />
+                                            <Typography sx={{ fontSize: '14px', color: '#202124' }}>
+                                                {airline.name}
+                                            </Typography>
+                                        </Box>
+                                    }
+                                    sx={{ display: 'flex', mb: 1 }}
+                                />
+                            ))
+                        ) : (
+                            <Typography variant="body2" color="text.secondary">
+                                No airlines available for this route
+                            </Typography>
+                        )}
+                    </Box>
                 </FilterSection>
             </FilterContent>
         </FilterContainer>
