@@ -7,17 +7,51 @@ import './App.css';
 
 function App() {
   const [flights, setFlights] = useState([]);
+  const [filters, setFilters] = useState({
+    priceRange: [0, 2000],
+    stops: 'any',
+    airlines: []
+  });
 
-  const handleSearch = () => {
-    // Mock flight data
-    const mockFlights = [
-      { airline: "Airline 1", price: 200, duration: "1h 30m", stops: 0 },
-      { airline: "Airline 2", price: 100, duration: "1h 30m", stops: 0 },
-      { airline: "Airline 3", price: 400, duration: "1h 30m", stops: 0 },
-    ];
-
-    setFlights(mockFlights);
+  const handleSearch = (searchResults) => {
+    setFlights(searchResults);
+    // Update price range based on actual flight prices
+    if (searchResults?.length > 0) {
+      const prices = searchResults.map(flight => parseFloat(flight.price.replace('$', '')));
+      const maxPrice = Math.max(...prices);
+      const minPrice = Math.min(...prices);
+      setFilters(prev => ({
+        ...prev,
+        priceRange: [minPrice, maxPrice]
+      }));
+    }
   };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const filteredFlights = flights.filter(flight => {
+    const price = parseFloat(flight.price.replace('$', ''));
+    const withinPriceRange = price >= filters.priceRange[0] && price <= filters.priceRange[1];
+    
+    let matchesStops = true;
+    if (filters.stops === 'nonstop') {
+      matchesStops = flight.outbound.stops === 0 && (!flight.return || flight.return.stops === 0);
+    } else if (filters.stops === '1-stop') {
+      matchesStops = flight.outbound.stops <= 1 && (!flight.return || flight.return.stops <= 1);
+    }
+
+    let matchesAirline = true;
+    if (filters.airlines?.length > 0) {
+      matchesAirline = (
+        filters.airlines.includes(flight.outbound.airline) &&
+        (!flight.return || filters.airlines.includes(flight.return.airline))
+      );
+    }
+
+    return withinPriceRange && matchesStops && matchesAirline;
+  });
 
   return (
     <div className="App">
@@ -28,17 +62,26 @@ function App() {
         <SearchForm onSearch={handleSearch} />
         <Box 
           sx={{ 
-            display: 'flex',
-            gap: 3,
-            padding: '0 24px',
             maxWidth: '1200px',
             margin: '0 auto',
-            alignItems: 'flex-start' // This ensures filters stay at the top
+            width: '100%'
           }}
         >
-          <Filters />
-          <Box sx={{ flexGrow: 1 }}>
-            <FlightResults flights={flights} />
+          <Box
+            sx={{ 
+              display: 'flex',
+              gap: 3,
+              alignItems: 'flex-start'
+            }}
+          >
+            <Filters 
+              filters={filters} 
+              onFilterChange={handleFilterChange}
+              flights={flights}
+            />
+            <Box sx={{ flexGrow: 1 }}>
+              <FlightResults flights={filteredFlights} />
+            </Box>
           </Box>
         </Box>
       </main>
