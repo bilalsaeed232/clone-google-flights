@@ -24,25 +24,25 @@ export const useAirportSearch = () => {
         }
       });
 
-      const searchResult = await response.data
+      const searchResult = response.data ?? {};
       console.log(searchResult);
 
-      const formattedAirports = searchResult.data.map(airport => {
-        const { title, subtitle} = airport.presentation
+      const formattedAirports = searchResult.data?.map(airport => {
+        const { title, subtitle } = airport.presentation ?? {};
         
-        return { label: `${title}, (${subtitle})`,
-                skyId: airport.skyId,
-                entityId: airport.entityId,
-                iata: airport.iata
-        }
-      });
+        return { 
+          label: `${title ?? 'Unknown'}, (${subtitle ?? 'Unknown'})`,
+          skyId: airport.skyId ?? '',
+          entityId: airport.entityId ?? '',
+          iata: airport.iata ?? ''
+        };
+      }) ?? [];
 
       console.log("Formatted Airports", formattedAirports);
-      
 
       setAirports(formattedAirports);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to search airports');
+      setError(err.response?.data?.message ?? 'Failed to search airports');
     } finally {
       setLoading(false);
     }

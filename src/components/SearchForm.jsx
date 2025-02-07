@@ -53,14 +53,22 @@ const SearchForm = ({ onSearch }) => {
       return;
     }
 
+    const legs = [{
+      origin: selectedOrigin.code,
+      destination: selectedDestination.code,
+      date: formData.departureDate.toISOString().split('T')[0]
+    }];
+
     const flights = await searchFlights({
       origin: selectedOrigin,
       destination: selectedDestination,
       ...formData
     });
 
+    console.log("flights", flights);
+
     if (flights) {
-      onSearch(flights);
+      onSearch(flights, legs);
     }
   };
 
