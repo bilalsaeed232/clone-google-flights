@@ -7,10 +7,11 @@ export const FilterContainer = styled(Paper)({
     borderRadius: '8px',
     backgroundColor: '#fff',
     padding: 0,
+    height: 'fit-content'
 });
 
 export const FilterContent = styled(Box)({
-    padding: '24px 24px 16px'
+    padding: '24px'
 });
 
 export const FilterTitle = styled(Typography)({
@@ -20,26 +21,22 @@ export const FilterTitle = styled(Typography)({
     marginBottom: '24px'
 });
 
-export const FilterSection = styled(Box)(({ theme }) => ({
-    marginBottom: '32px',
-    '&:not(:first-of-type)': {
-        borderTop: '1px solid #dadce0',
-        paddingTop: '24px'
+export const FilterSection = styled(Box)({
+    '&:last-child': {
+        marginBottom: 0
     }
-}));
+});
 
 export const SectionTitle = styled(Typography)({
     fontSize: '14px',
     fontWeight: 500,
     color: '#202124',
-    marginBottom: '8px'
+    marginBottom: '12px'
 });
 
 export const PriceDisplay = styled(Box)({
     display: 'flex',
     justifyContent: 'space-between',
-    paddingLeft: '8px',
-    paddingRight: '8px',
     marginTop: '8px'
 });
 
